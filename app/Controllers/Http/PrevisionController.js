@@ -153,6 +153,7 @@ class PrevisionController {
         status: 'sucess',
         deck: newDeck
       });
+
     }catch(error){
       return response.status(500).json ({
         status: 'error',
@@ -174,14 +175,15 @@ class PrevisionController {
   async show ({params, request, response, view}) {
 
     try{
-      const cards = await Card.query().with('deck').where('deck_id','=' ,params.id).fetch();
-      
-      console.log(JSON.parse(cards)[1])
+      // Faz o relacionamento das tabelas 
+      const cards = await Card.query().with('deck').where('deck_id','=' ,params.id).fetch()
+      // Gera um número aleatório com base na quantidade de rows
+      const randomCard = Math.floor((Math.random() * cards.size()));
 
-
+      // retorna a posição escolhida aleatoriamente
       return response.json ({
         status: 'sucess',
-        deck: cards
+        card: cards.rows[randomCard]
       });
 
     }catch(error){
@@ -206,13 +208,39 @@ class PrevisionController {
 
   /**
    * Delete a prevision with id.
-   * DELETE previsions/:id
+   * DELETE previsionsCard/:id
    *
    * @param {object} ctx
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async destroy ({ params, request, response }) {
+  async destroyCard ({ params, request, response }) {
+    try{
+
+      const cardExists = await Card.find(params.id)
+
+      if(cardExists){
+        const deleted = await cardExists.delete()
+
+        return response.json ({
+          status: 'sucess',
+          card: deleted
+        });
+      }
+
+      return response.status(400).json ({
+        status: 'error',
+        message: 'Card não existe!'
+      });
+
+    }catch(error){
+      return response.status(500).json ({
+        status: 'error',
+        message: 'Ocorreu um erro inesperado!',
+        technical: error,
+      })
+    } 
+
   }
 }
 

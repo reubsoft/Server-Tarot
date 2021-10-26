@@ -24,3 +24,4 @@ Route.post('/card', 'PrevisionController.storeCard');
 Route.post('/create', 'PrevisionController.store');
 Route.get('/show/:id', 'PrevisionController.show');
 Route.get('/all', 'PrevisionController.index');
+Route.get('/destroyCard/:id', 'PrevisionController.destroyCard');
